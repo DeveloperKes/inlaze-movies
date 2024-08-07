@@ -3,7 +3,7 @@ const environments = {
   //TODO: Database data
   DATABASE: {},
   RESEND: {
-    APIKEY: 're_gpMFX5sb_HCdZCn3icWpVEnY1hqAgGAvX',
+    APIKEY: '',
   },
 };
 
