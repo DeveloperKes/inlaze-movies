@@ -1,9 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { DatabaseErrors, UsersAPIErrors } from 'src/utils/dictErrors';
+import { DatabaseErrors, UsersAPIErrors } from 'src/utils/dictMessages';
+import { updateCodeVerification } from './dto/code-verification.dto';
+import { updateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +22,7 @@ export class UsersService {
   findAll(): Promise<User[]> {
     return this.usersRepository.find({
       select: {
+        id: true,
         email: true,
         isActive: true,
         created_at: true,
@@ -23,12 +31,28 @@ export class UsersService {
     });
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: number, internal: boolean = false): Promise<User> {
     return this.usersRepository.findOne({
       where: { id },
       select: {
+        id: true,
+        email: true,
+        password: internal,
+        isActive: true,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+  }
+  findOneBy(where: any[], internal: boolean = false): Promise<User> {
+    return this.usersRepository.findOne({
+      where,
+      select: {
+        id: true,
         email: true,
         isActive: true,
+        password: internal,
+        codeVerification: internal,
         created_at: true,
         updated_at: true,
       },
@@ -47,10 +71,22 @@ export class UsersService {
         return res;
       });
     } catch (error) {
+      console.log(error);
       throw new HttpException(
-        `${UsersAPIErrors[DatabaseErrors[error.code]].message}`,
+        `${UsersAPIErrors[DatabaseErrors[error.code]]?.message || 'Error catched'}`,
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async update(
+    id: number,
+    updateData: updateCodeVerification | updateUserDto,
+  ): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException(UsersAPIErrors['notFound']);
+
+    Object.assign(user, updateData);
+    return this.usersRepository.save(user);
   }
 }

@@ -20,6 +20,9 @@ export class User {
   @Column({ default: false })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  codeVerification: string;
+
   @CreateDateColumn()
   created_at: Date;
 
