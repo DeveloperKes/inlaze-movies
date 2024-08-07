@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import environments from 'src/environments/environment';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,7 +15,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractToken(req);
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: environments.SECRECT_KEY,
+        secret: process.env.SECRET_KEY,
       });
       req['user'] = payload;
     } catch (error) {

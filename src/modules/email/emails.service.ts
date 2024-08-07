@@ -11,7 +11,7 @@ export class EmailService {
       secure: true,
       auth: {
         user: 'resend',
-        pass: 're_gpMFX5sb_HCdZCn3icWpVEnY1hqAgGAvX',
+        pass: process.env.RESEND_API_KEY,
       },
     });
   }

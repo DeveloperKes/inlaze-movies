@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import environments from 'src/environments/environment';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { EmailModule } from '../email/emails.module';
@@ -11,7 +10,7 @@ import { EmailModule } from '../email/emails.module';
     UsersModule,
     JwtModule.register({
       global: true,
-      secret: environments.SECRECT_KEY,
+      secret: process.env.SECRET_KEY,
       signOptions: { expiresIn: '300s' },
     }),
     EmailModule,
